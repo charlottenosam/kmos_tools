@@ -8,7 +8,7 @@ KMOS tools
 
 Python tools for post-processing and analysing `VLT/KMOS <https://www.eso.org/sci/facilities/paranal/instruments/kmos.html>`_ data from the KLASS VLT Large Program (`196.A-0778 <https://ui.adsabs.harvard.edu/abs/2019Msngr.176...33F/abstract>`_
 
-* Documentation: https://charlottenosam.github.io/kmos_tools.
+**Documentation: https://charlottenosam.github.io/kmos_tools.**
 
 Features
 --------
@@ -16,6 +16,15 @@ Features
 * Additional sky subtraction to individual frames
 * Measuring shifts between frames from star profiles
 
+Installation
+-------------
+Navigate to the directory you want to install the code in and clone the `github repository <https://github.com/charlottenosam/kmos_tools>`_:
+
+.. code-block:: bash
+
+    $ git clone git@github.com:charlottenosam/kmos_tools.git
+    $ cd kmos_tools
+    $ python setup.py install
 
 References and Acknowledgements
 -------------------------------
