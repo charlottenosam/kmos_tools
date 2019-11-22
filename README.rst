@@ -5,9 +5,6 @@ KMOS tools
 .. image:: https://img.shields.io/travis/charlottenosam/kmos_tools.svg
         :target: https://travis-ci.org/charlottenosam/kmos_tools
 
-.. image:: https://img.shields.io/pypi/v/kmos_tools.svg
-        :target: https://pypi.python.org/pypi/kmos_tools
-
 
 Python tools for post-processing and analysing `VLT/KMOS <https://www.eso.org/sci/facilities/paranal/instruments/kmos.html>`_ data from the KLASS VLT Large Program (`196.A-0778 <https://ui.adsabs.harvard.edu/abs/2019Msngr.176...33F/abstract>`_
 
