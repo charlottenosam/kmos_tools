@@ -2,7 +2,7 @@
 Installation
 ============
 
-Navigate to the directory you want to install the code in and clone the github repository:
+Navigate to the directory you want to install the code in and clone the `github repository <https://github.com/charlottenosam/kmos_tools>`_:
 
 .. code-block:: bash
 
