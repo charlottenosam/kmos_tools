@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>KMOS Reduction Steps &mdash; KMOS tools 0.post5+g572a5db documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script type="text/javascript" src="_static/copybutton.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KMOS tools
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post5+g572a5db
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">KMOS Reduction Steps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#download-data-from-eso">1. Download data from ESO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-esoreflex">2. Run EsoReflex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sky-subtraction-correction">3. Sky subtraction correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rotate-frames-which-don-t-have-north-up-optional">4. Rotate frames which don’t have North up (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#measure-star-psfs-and-calculate-user-shifts">5. Measure star PSFs and calculate user shifts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#find-positions-of-stars">5.1. Find positions of stars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calculate-shifts-between-frames">5.2. Calculate shifts between frames</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#combine-exposures">6. Combine exposures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-history.html">Release History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">KMOS tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>KMOS Reduction Steps</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="kmos-reduction-steps">
+<h1>KMOS Reduction Steps<a class="headerlink" href="#kmos-reduction-steps" title="Permalink to this headline">¶</a></h1>
+<p>These are my steps for reducing KMOS data</p>
+<div class="section" id="download-data-from-eso">
+<h2>1. Download data from ESO<a class="headerlink" href="#download-data-from-eso" title="Permalink to this headline">¶</a></h2>
+<p>Unzip the data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ gzip -d *.Z
+</pre></div>
+</div>
+<p>If you want to inspect the final data you can use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dfits –x 0 KMOS*fits | fitsort tpl.id det.seq1.dit ins.filt1.id ocs.rot.naangle
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>May need to correct bias from detector readout (causes striping in raw images), with code from Trevor Mendel (but I think this is fixed in recent versions of the ESO pipeline)</p>
+</div>
+</div>
+<div class="section" id="run-esoreflex">
+<h2>2. Run EsoReflex<a class="headerlink" href="#run-esoreflex" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>esoreflex <span class="p">&amp;</span>
+</pre></div>
+</div>
+<p>I use the following settings:</p>
+<ul class="simple">
+<li><p>Remove the COMBINE step so that all OBs can be combined later</p></li>
+<li><p>SCI_RED ==&gt; sky_tweak = true</p></li>
+<li><p>Set UseSkyFlats = no (to use lamp flats instead - taken at more rotation angles, better according to ESO)</p></li>
+<li><p>Animate at runtime 100ms</p></li>
+</ul>
+</div>
+<div class="section" id="sky-subtraction-correction">
+<h2>3. Sky subtraction correction<a class="headerlink" href="#sky-subtraction-correction" title="Permalink to this headline">¶</a></h2>
+<p>Do additional sky subtraction correction to individual exposures</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ESO pipeline v&lt;1.4 may need to do flux calibration correction, to divide by DIT length. Can use <a class="reference internal" href="api.html#kmos_tools.pipeline_fixes.flux_fix" title="kmos_tools.pipeline_fixes.flux_fix"><code class="xref py py-func docutils literal notranslate"><span class="pre">kmos_tools.pipeline_fixes.flux_fix()</span></code></a>.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kmos_tools</span> <span class="kn">as</span> <span class="nn">kt</span>
+
+<span class="c1"># Find your individual exposures</span>
+<span class="n">exp_list</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">find_exposures</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">exp_list</span><span class="p">:</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">Exposure</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+
+    <span class="c1"># Make 1D sky residual spectra for each exposure (1 per detector)</span>
+    <span class="n">kt</span><span class="o">.</span><span class="n">make_sky_residual_spectra</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+
+    <span class="c1"># Do additional sky subtraction and save</span>
+    <span class="n">kt</span><span class="o">.</span><span class="n">subtract_sky_residual_spectra</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I also had some success with <a class="reference external" href="https://zap.readthedocs.io/en/2.1/">ZAP</a>. however it had problems at the edges of the cubes.</p>
+</div>
+</div>
+<div class="section" id="rotate-frames-which-don-t-have-north-up-optional">
+<h2>4. Rotate frames which don’t have North up (optional)<a class="headerlink" href="#rotate-frames-which-don-t-have-north-up-optional" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes the instrument is rotated between OBs, need to rotate the IFUs so they can be combined</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kmos_tools</span> <span class="kn">as</span> <span class="nn">kt</span>
+
+<span class="c1"># Find your individual exposures</span>
+<span class="n">exp_list</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">find_exposures</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">exp_list</span><span class="p">:</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">Exposure</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+
+    <span class="n">kt</span><span class="o">.</span><span class="n">rotation_fix</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="measure-star-psfs-and-calculate-user-shifts">
+<h2>5. Measure star PSFs and calculate user shifts<a class="headerlink" href="#measure-star-psfs-and-calculate-user-shifts" title="Permalink to this headline">¶</a></h2>
+<p>Use observed stars in each exposure to estimate the PSF and then calculate a list of accurate dither offsets between exposures (as KMOS doesn’t always go where you set the dithers…)</p>
+<div class="section" id="find-positions-of-stars">
+<h3>5.1. Find positions of stars<a class="headerlink" href="#find-positions-of-stars" title="Permalink to this headline">¶</a></h3>
+<p>Finds stars in exposures, measures their PSF FWHM and positions and creates a list of the ‘good’ frames (below a PSF cut) and a table of the star positions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># List of frames to check (should be all the frames you want to combine)</span>
+<span class="n">frame_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;frame1.fits&#39;</span><span class="p">,</span> <span class="s1">&#39;frame2.fits&#39;</span><span class="p">]</span>
+
+<span class="n">fname_stars</span>   <span class="o">=</span> <span class="s1">&#39;stars.txt&#39;</span>   <span class="c1"># File to save star parameters to</span>
+<span class="n">fname_combine</span> <span class="o">=</span> <span class="s1">&#39;combine.sof&#39;</span> <span class="c1"># .sof file to create</span>
+
+<span class="n">kt</span><span class="o">.</span><span class="n">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="n">fname_combine</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calculate-shifts-between-frames">
+<h3>5.2. Calculate shifts between frames<a class="headerlink" href="#calculate-shifts-between-frames" title="Permalink to this headline">¶</a></h3>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">fname_stars</span></code> file, calculate the shifts between each frame.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fname_usershifts</span> <span class="o">=</span> <span class="s1">&#39;usershifts.txt&#39;</span> <span class="c1"># file to save usershifts to</span>
+
+<span class="n">kt</span><span class="o">.</span><span class="n">make_user_shifts_file</span><span class="p">(</span><span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">usershifts_filename</span><span class="o">=</span><span class="n">fname_usershifts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If using <code class="docutils literal notranslate"><span class="pre">user</span></code> shifts to combine KMOS frames, the order of frames in <code class="docutils literal notranslate"><span class="pre">.sof</span></code> <strong>must match</strong> the order of the offsets in <code class="docutils literal notranslate"><span class="pre">'usershifts.txt'</span></code>. This should be done automatically in these scripts, so don’t reorder the frames in the <code class="docutils literal notranslate"><span class="pre">.sof</span></code> file.</p>
+</div>
+</div>
+</div>
+<div class="section" id="combine-exposures">
+<h2>6. Combine exposures<a class="headerlink" href="#combine-exposures" title="Permalink to this headline">¶</a></h2>
+<p>I use the default (sigma clipping) combination, using my calculated shifts between frames</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In v1.4 combine.sof file needs SCI_RECONSTRUCTED after filename</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">combinedir</span><span class="o">=</span>combineOBs
+mkdir <span class="nv">$combinedir</span>
+cp usershifts.txt combine.sof <span class="nv">$combinedir</span>
+<span class="nb">cd</span> <span class="nv">$combinedir</span>
+esorex <span class="nv">kmos_combine</span> <span class="o">==</span><span class="nv">method</span><span class="o">=</span><span class="s1">&#39;user&#39;</span> <span class="o">==</span><span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;usershifts.txt&#39;</span> <span class="o">==</span>edge_nan combine.sof
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Charlotte Mason
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

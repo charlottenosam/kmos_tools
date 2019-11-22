@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API &mdash; KMOS tools 0.post5+g572a5db documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script type="text/javascript" src="_static/copybutton.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release History" href="release-history.html" />
+    <link rel="prev" title="KMOS Reduction Steps" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KMOS tools
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post5+g572a5db
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">KMOS Reduction Steps</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-kmos_tools.exposure">Exposure Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kmos_tools.sky_clean">Sky residual cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kmos_tools.star_offsets">Finding star offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kmos_tools.pipeline_fixes">Pipeline fixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kmos_tools.io">I/O</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-history.html">Release History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">KMOS tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<p>This page details the methods and classes provided by the <code class="docutils literal notranslate"><span class="pre">kmos_tools</span></code> module.</p>
+<div class="section" id="module-kmos_tools.exposure">
+<span id="exposure-class"></span><h2>Exposure Class<a class="headerlink" href="#module-kmos_tools.exposure" title="Permalink to this headline">¶</a></h2>
+<p>Class to hold individual KMOS exposures for post-processing</p>
+<p>Takes <code class="docutils literal notranslate"><span class="pre">*SCI_RECONSTRUCTED.fits</span></code> filenames as input</p>
+<dl>
+<dt>Usage:</dt><dd><p>Create a instance of the exposure class for each exposure file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kmos_tools</span> <span class="k">import</span> <span class="n">exposure</span>
+
+<span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;KMOS_SCI_RECONSTRUCTED.fits&#39;</span>
+<span class="n">exp</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">Exposure</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="class">
+<dt id="kmos_tools.exposure.Exposure">
+<em class="property">class </em><code class="sig-prename descclassname">kmos_tools.exposure.</code><code class="sig-name descname">Exposure</code><span class="sig-paren">(</span><em class="sig-param">reconstructed_fits_path</em>, <em class="sig-param">vb=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/exposure.html#Exposure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.exposure.Exposure" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single KMOS exposure object</p>
+<p>Takes SCI_RECONSTRUCTED filename as input, to be used for other operations.</p>
+<dl class="attribute">
+<dt id="kmos_tools.exposure.Exposure.filename">
+<code class="sig-name descname">filename</code><a class="headerlink" href="#kmos_tools.exposure.Exposure.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>filepath to SCI_RECONSTRUCTED fits file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kmos_tools.exposure.Exposure.hdulist">
+<code class="sig-name descname">hdulist</code><a class="headerlink" href="#kmos_tools.exposure.Exposure.hdulist" title="Permalink to this definition">¶</a></dt>
+<dd><p>HDUlist of IFUs in the exposure</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>astropy sequence of HDU objects or single HDU</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kmos_tools.exposure.Exposure.hdr">
+<code class="sig-name descname">hdr</code><a class="headerlink" href="#kmos_tools.exposure.Exposure.hdr" title="Permalink to this definition">¶</a></dt>
+<dd><p>FITS header</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>astropy header</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kmos_tools.exposure.Exposure.filter">
+<code class="sig-name descname">filter</code><a class="headerlink" href="#kmos_tools.exposure.Exposure.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>KMOS filter used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kmos_tools.exposure.Exposure.frame_time">
+<code class="sig-name descname">frame_time</code><a class="headerlink" href="#kmos_tools.exposure.Exposure.frame_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>date of observations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-kmos_tools.sky_clean">
+<span id="sky-residual-cleaning"></span><h2>Sky residual cleaning<a class="headerlink" href="#module-kmos_tools.sky_clean" title="Permalink to this headline">¶</a></h2>
+<p>Module to clean up sky subtraction residuals in KMOS data</p>
+<p>Works on individual exposures which must then be combined via <code class="docutils literal notranslate"><span class="pre">kmos_combine</span></code>.</p>
+<dl class="function">
+<dt id="kmos_tools.sky_clean.make_sky_residual_spectra">
+<code class="sig-prename descclassname">kmos_tools.sky_clean.</code><code class="sig-name descname">make_sky_residual_spectra</code><span class="sig-paren">(</span><em class="sig-param">exposure</em>, <em class="sig-param">clobber=True</em>, <em class="sig-param">plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/sky_clean.html#make_sky_residual_spectra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.sky_clean.make_sky_residual_spectra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate all the sky residual corrections for one DIT ~ a la Trevor Mendel</p>
+<p>Generate median 1D sky spectra for each detector,
+only from S1 and S3 cubes, and save them to use for subtraction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – exposure object</p></li>
+<li><p><strong>clobber</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Make a new sky spectrum if it already exists</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – make and save a plot of the median sky spectra</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Saves FITS file with 1D sky spectra for each detector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kmos_tools.sky_clean.subtract_sky_residual_spectra">
+<code class="sig-prename descclassname">kmos_tools.sky_clean.</code><code class="sig-name descname">subtract_sky_residual_spectra</code><span class="sig-paren">(</span><em class="sig-param">exposure</em>, <em class="sig-param">clobber=True</em>, <em class="sig-param">plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/sky_clean.html#subtract_sky_residual_spectra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.sky_clean.subtract_sky_residual_spectra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subtract residual sky spectrum from each IFU using relevant detector sky spectrum</p>
+<p>Rescales 1D sky spectrum <span class="math notranslate nohighlight">\(s_\lambda\)</span> in each spatial pixel by <span class="math notranslate nohighlight">\(A_{x, y}\)</span> for each IFU such that sky subtracted spectrum:</p>
+<div class="math notranslate nohighlight">
+\[f_{x, y, \lambda}^\mathrm{skysub} = f_{x, y, \lambda} - A_{x, y}s_\lambda\]</div>
+<p>Where <span class="math notranslate nohighlight">\(A_{x, y}\)</span> is obtained by minimising:</p>
+<div class="math notranslate nohighlight">
+\[\left( \frac{f_{x, y, \lambda}^\mathrm{skysub}}{\sigma_\lambda} \right)^2\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – exposure object</p></li>
+<li><p><strong>clobber</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Make a new sky spectrum if it already exists</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – make and save a plot of the median sky spectra</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Saves FITS file with 1D sky spectra for each detector with filename <code class="docutils literal notranslate"><span class="pre">*_SKYSUB.fits</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kmos_tools.sky_clean.sky_residual">
+<code class="sig-prename descclassname">kmos_tools.sky_clean.</code><code class="sig-name descname">sky_residual</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">sky</em>, <em class="sig-param">data</em>, <em class="sig-param">err</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/sky_clean.html#sky_residual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.sky_clean.sky_residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Residual for 1D sky-scaling</p>
+<p>Used to find optimal rescaling of 1D spectrum, A,
+for each spatial pixel</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R_i = \frac{(f_i - A s_i)}{\sigma_i} \\
+\chi^2 = \sum_i R_i^2\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>params</em>) – parameters</p></li>
+<li><p><strong>sky</strong> (<em>ndarray</em>) – 1D sky spectrum</p></li>
+<li><p><strong>data</strong> (<em>ndarray</em>) – 3D data cube</p></li>
+<li><p><strong>err</strong> (<em>ndarray</em>) – 1D error spectrum</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>residual</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kmos_tools.star_offsets">
+<span id="finding-star-offsets"></span><h2>Finding star offsets<a class="headerlink" href="#module-kmos_tools.star_offsets" title="Permalink to this headline">¶</a></h2>
+<p>Module to find stars in an exposure, and fit their spatial positions to use in <code class="docutils literal notranslate"><span class="pre">kmos_combine</span> <span class="pre">--user_shifts</span></code></p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># List of frames to check (should be all the frames you want to combine)</span>
+<span class="n">frame_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;frame1.fits&#39;</span><span class="p">,</span> <span class="s1">&#39;frame2.fits&#39;</span><span class="p">]</span>
+
+<span class="n">fname_stars</span>   <span class="o">=</span> <span class="s1">&#39;stars.txt&#39;</span>   <span class="c1"># File to save star parameters to</span>
+<span class="n">fname_combine</span> <span class="o">=</span> <span class="s1">&#39;combine.sof&#39;</span> <span class="c1"># .sof file to create</span>
+
+<span class="n">kt</span><span class="o">.</span><span class="n">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="n">fname_combine</span><span class="p">)</span>
+
+<span class="n">fname_usershifts</span> <span class="o">=</span> <span class="s1">&#39;usershifts.txt&#39;</span> <span class="c1"># file to save usershifts to</span>
+
+<span class="n">kt</span><span class="o">.</span><span class="n">make_user_shifts_file</span><span class="p">(</span><span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">usershifts_filename</span><span class="o">=</span><span class="n">fname_usershifts</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="kmos_tools.star_offsets.make_user_shifts_file">
+<code class="sig-prename descclassname">kmos_tools.star_offsets.</code><code class="sig-name descname">make_user_shifts_file</code><span class="sig-paren">(</span><em class="sig-param">starparams_filename</em>, <em class="sig-param">usershifts_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/star_offsets.html#make_user_shifts_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.star_offsets.make_user_shifts_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create file of user shifts to use with <code class="docutils literal notranslate"><span class="pre">kmos_combine</span> <span class="pre">--method=&quot;user&quot;</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To run <code class="docutils literal notranslate"><span class="pre">kmos_combine</span></code> you <em>must</em> use the frames in the order they are used here
+i.e. so the offset matches the right frame</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starparams_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – filepath of table with the star positions</p></li>
+<li><p><strong>usershifts_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – filename to save usershift table to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kmos_tools.star_offsets.star_positions_batch">
+<code class="sig-prename descclassname">kmos_tools.star_offsets.</code><code class="sig-name descname">star_positions_batch</code><span class="sig-paren">(</span><em class="sig-param">frame_list</em>, <em class="sig-param">psf_cut=0.8</em>, <em class="sig-param">edge_x=2.0</em>, <em class="sig-param">edge_y=2.0</em>, <em class="sig-param">starparams_filename=None</em>, <em class="sig-param">combinefiles_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/star_offsets.html#star_positions_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.star_offsets.star_positions_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of exposure file names, will find stars and measure PSFs.</p>
+<p>Given a list of exposure file names, will find stars and measure PSFs.
+Then creates a list of frames with PSF FWHM below a given value, saves
+the list of star positions (to calculate user shifts) and creates a .sof
+file of the ‘good’ frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – List of file names of individual <code class="docutils literal notranslate"><span class="pre">SCI_RECONSTRUCTED.fits</span></code> files</p></li>
+<li><p><strong>psf_cut</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – max PSF to use for combining (in arcsec) [default = 0.8 arcsec]</p></li>
+<li><p><strong>edge_x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – x_star &gt; edge_x to include (i.e. not on the edge) [default = 2 pixels]</p></li>
+<li><p><strong>edge_y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – y_star &gt; edge_y to include (i.e. not on the edge) [default = 2 pixels]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>starparams_filename (str)</em> – table with parameters of good stars
+combinefiles_filename (str): .sof file with list of good frames</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kmos_tools.star_offsets.find_star_ifu">
+<code class="sig-prename descclassname">kmos_tools.star_offsets.</code><code class="sig-name descname">find_star_ifu</code><span class="sig-paren">(</span><em class="sig-param">exposure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/star_offsets.html#find_star_ifu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.star_offsets.find_star_ifu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the IFUs in the SCI_RECONSTRUCTED cubes containing a star</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – exposure object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>IFU containing star</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>exposure.star_ifu (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kmos_tools.star_offsets.star_fit_profile">
+<code class="sig-prename descclassname">kmos_tools.star_offsets.</code><code class="sig-name descname">star_fit_profile</code><span class="sig-paren">(</span><em class="sig-param">exposure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/star_offsets.html#star_fit_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.star_offsets.star_fit_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit gaussian profiles to star to find PSFs</p>
+<p>Using ESO command line pipeline tools (<code class="docutils literal notranslate"><span class="pre">esorex</span></code>) extract the star from the exposure,
+fit a Gaussian profile to it, and save the fitted star to a new fits file <code class="docutils literal notranslate"><span class="pre">star_file_name</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – exposure object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>filepath of FITS file with star with PSF fitted to it
+invert (bool): was the star flux weird and inverted?</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>star_file_name (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kmos_tools.star_offsets.star_psf">
+<code class="sig-prename descclassname">kmos_tools.star_offsets.</code><code class="sig-name descname">star_psf</code><span class="sig-paren">(</span><em class="sig-param">exposure</em>, <em class="sig-param">clobber=True</em>, <em class="sig-param">vb=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/star_offsets.html#star_psf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.star_offsets.star_psf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the PSF profiles of the star for calculating user shifts</p>
+<p>Read the file <code class="docutils literal notranslate"><span class="pre">star_file_name</span></code> and return the main parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – exposure object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>PSF centroid x in pixels
+psf_center_y (float): PSF centroid y in pixels
+psf_fwhm (float): PSF FWHM in arcsec
+psf_ba (float): PSF BA # TODO I don’t remember what this is!!
+psf_pa (float): PSF position angle in degrees
+exposure.invert (bool): is the flux weird?</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>psf_center_x (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kmos_tools.pipeline_fixes">
+<span id="pipeline-fixes"></span><h2>Pipeline fixes<a class="headerlink" href="#module-kmos_tools.pipeline_fixes" title="Permalink to this headline">¶</a></h2>
+<p>Quick fixes for KMOS pipeline problems. Methods are:</p>
+<dl class="method">
+<dt id="kmos_tools.pipeline_fixes.rotation_fix">
+<code class="sig-prename descclassname">kmos_tools.pipeline_fixes.</code><code class="sig-name descname">rotation_fix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/pipeline_fixes.html#rotation_fix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.pipeline_fixes.rotation_fix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotates frames so that they are all orientated in the same direction for combining</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kmos_tools.pipeline_fixes.calib_fix">
+<code class="sig-prename descclassname">kmos_tools.pipeline_fixes.</code><code class="sig-name descname">calib_fix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kmos_tools.pipeline_fixes.calib_fix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix flux calibration if it wasn’t done by the pipeline (i.e. no standard observed on on detector)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kmos_tools.pipeline_fixes.flux_fix">
+<code class="sig-prename descclassname">kmos_tools.pipeline_fixes.</code><code class="sig-name descname">flux_fix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/pipeline_fixes.html#flux_fix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.pipeline_fixes.flux_fix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fixes an old (now fixed??) pipeline problem where flux needs to be divided by DIT length in seconds</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">kmos_tools.pipeline_fixes.</code><code class="sig-name descname">rotation_fix</code><span class="sig-paren">(</span><em class="sig-param">exposure</em>, <em class="sig-param">updateheader=False</em>, <em class="sig-param">keepsize=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/pipeline_fixes.html#rotation_fix"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sometimes the instrument was rotated, this rotates all the frames to the same angle for combining</p>
+<p>For some OBs the field is rotated so North is no longer up. This is when ocs.rot.offangle != 0</p>
+<p>Need to rotate back to North = up so we can combine nicely</p>
+<ol class="arabic simple">
+<li><p>Check if frame is rotated</p></li>
+<li><p>Use kmo_rotate to rotate the frame</p></li>
+<li><p>Update the headers</p></li>
+<li><p>Rename old file to _rotoffangle###</p></li>
+<li><p>Save file</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Best to run this on sky sub files (_noS2.fits)</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – exposure object</p></li>
+<li><p><strong>updateheader</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Update info in the header for the rotated frame</p></li>
+<li><p><strong>keepsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – extrapolate to keep the IFU the same size (for combining a mixture of cubes)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">kmos_tools.pipeline_fixes.</code><code class="sig-name descname">flux_fix</code><span class="sig-paren">(</span><em class="sig-param">exposure</em>, <em class="sig-param">clobber=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/pipeline_fixes.html#flux_fix"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Fix Reflex exposure time bug</p>
+<p>Fix the bug in Reflex by dividing the calibrated flux from the standard stars
+by the DIT for science exposures</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is now obsolete as fixed in kmos pipeline v. &gt; 1.4</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – </p></li>
+<li><p><strong>clobber</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Overwrite exposure file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kmos_tools.io">
+<span id="i-o"></span><h2>I/O<a class="headerlink" href="#module-kmos_tools.io" title="Permalink to this headline">¶</a></h2>
+<p>I/O functions for KMOS data</p>
+<dl class="function">
+<dt id="kmos_tools.io.find_exposures">
+<code class="sig-prename descclassname">kmos_tools.io.</code><code class="sig-name descname">find_exposures</code><span class="sig-paren">(</span><em class="sig-param">dir='*'</em>, <em class="sig-param">prefix='*'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/io.html#find_exposures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.io.find_exposures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all the SCI_RECONSTRUCTED fits files in a directory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Directory to look for exposures in</p></li>
+<li><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – prefix for filenames</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kmos_tools.io.insensitive_glob">
+<code class="sig-prename descclassname">kmos_tools.io.</code><code class="sig-name descname">insensitive_glob</code><span class="sig-paren">(</span><em class="sig-param">pattern</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/io.html#insensitive_glob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.io.insensitive_glob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Case insensitive find file names</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pattern</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – pattern to search for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sorted list of filenames which match pattern</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>file_list (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="release-history.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="usage.html" class="btn btn-neutral float-left" title="KMOS Reduction Steps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Charlotte Mason
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

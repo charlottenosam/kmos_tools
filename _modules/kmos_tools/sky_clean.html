@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>kmos_tools.sky_clean &mdash; KMOS tools 0.post5+g572a5db documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script type="text/javascript" src="../../_static/copybutton.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> KMOS tools
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post5+g572a5db
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">KMOS Reduction Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">KMOS tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>kmos_tools.sky_clean</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for kmos_tools.sky_clean</h1><div class="highlight"><pre>
+<span></span><span class="c1"># kmos_tools/sky_clean.py</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Module to clean up sky subtraction residuals in KMOS data</span>
+
+<span class="sd">Works on individual exposures which must then be combined via ``kmos_combine``.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">lmfit</span> <span class="k">import</span> <span class="n">Parameters</span><span class="p">,</span> <span class="n">minimize</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;make_sky_residual_spectra&quot;</span><span class="p">,</span> <span class="s2">&quot;subtract_sky_residual_spectra&quot;</span><span class="p">,</span> <span class="s2">&quot;sky_residual&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="make_sky_residual_spectra"><a class="viewcode-back" href="../../api.html#kmos_tools.sky_clean.make_sky_residual_spectra">[docs]</a><span class="k">def</span> <span class="nf">make_sky_residual_spectra</span><span class="p">(</span><span class="n">exposure</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate all the sky residual corrections for one DIT ~ a la Trevor Mendel</span>
+
+<span class="sd">    Generate median 1D sky spectra for each detector,</span>
+<span class="sd">    only from S1 and S3 cubes, and save them to use for subtraction.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        exposure (object): exposure object</span>
+<span class="sd">        clobber (bool): Make a new sky spectrum if it already exists</span>
+<span class="sd">        plot (bool): make and save a plot of the median sky spectra</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Saves FITS file with 1D sky spectra for each detector</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Correcting sky residuals in&#39;</span><span class="p">,</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="c1"># Create stacks of &#39;empty&#39; cubes</span>
+    <span class="n">exposure</span><span class="o">.</span><span class="n">filename_skyspec</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.fits&#39;</span><span class="p">,</span> <span class="s1">&#39;_SKYSPEC.fits&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skyspec</span><span class="p">)</span> <span class="ow">and</span> <span class="n">clobber</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skyspec</span><span class="p">,</span> <span class="s1">&#39;sky spectra already exist, moving on...&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">detector1</span><span class="p">,</span> <span class="n">detector2</span><span class="p">,</span> <span class="n">detector3</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ifu</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;IFU.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ifu</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.DATA&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="n">ifu_comment</span> <span class="o">=</span> <span class="s1">&#39;HIERARCH ESO OCS ARM&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ifu</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; NAME&#39;</span>
+                <span class="n">ifu_header</span>  <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">header</span>
+
+                <span class="c1"># Use only frames with S1 or S3 targets for sky subtraction</span>
+                <span class="k">if</span> <span class="s1">&#39;S1&#39;</span> <span class="ow">in</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="p">[</span><span class="n">ifu_comment</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;S3&#39;</span> <span class="ow">in</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="p">[</span><span class="n">ifu_comment</span><span class="p">]:</span>
+
+                    <span class="n">ifu_cube</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">data</span>
+
+                    <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">ifu</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
+                        <span class="n">detector1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifu_cube</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="mi">9</span> <span class="o">&lt;=</span> <span class="n">ifu</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">:</span>
+                        <span class="n">detector2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifu_cube</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">detector3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifu_cube</span><span class="p">)</span>
+
+        <span class="c1"># Stack all spectra</span>
+        <span class="n">detector1</span><span class="p">,</span> <span class="n">detector2</span><span class="p">,</span> <span class="n">detector3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">detector1</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">detector2</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">detector3</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">detector_all</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">detector1</span><span class="p">,</span> <span class="n">detector2</span><span class="p">,</span> <span class="n">detector3</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">detector1</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">detector2</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">detector_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">detector1</span><span class="p">,</span> <span class="n">detector2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">detector1</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">detector3</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">detector_all</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">detector1</span><span class="p">,</span> <span class="n">detector3</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">detector2</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">detector3</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">detector_all</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">detector2</span><span class="p">,</span> <span class="n">detector3</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">detector1</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">detector_all</span> <span class="o">=</span> <span class="n">detector1</span>
+            <span class="k">elif</span> <span class="n">detector2</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">detector_all</span> <span class="o">=</span> <span class="n">detector2</span>
+            <span class="k">elif</span> <span class="n">detector3</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">detector_all</span> <span class="o">=</span> <span class="n">detector3</span>
+
+        <span class="c1"># Generate median of &#39;empty&#39; stacks to use as sky residual spectra for each detector</span>
+        <span class="n">skyspec_1D_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">detector_all</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">skyspec_1D</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">detector1</span><span class="p">,</span> <span class="n">detector2</span><span class="p">,</span> <span class="n">detector3</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">detectors</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">detectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">skyspec_1D</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">detectors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">skyspec_1D</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">skyspec_1D_all</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;All detectors (</span><span class="si">%i</span><span class="s1"> IFUs)&#39;</span> <span class="o">%</span> <span class="n">detector_all</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">skyspec_1D</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">skyspec_1D</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">skyspec_1D</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Detector </span><span class="si">%i</span><span class="s1"> (</span><span class="si">%i</span><span class="s1"> IFUs)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">detectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">skyspec_1D_all</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">skyspec_1D_all</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ymin</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">:</span> <span class="n">ymin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.e-18</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Wavelength [pix]&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Flux&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Sky Subtraction Residuals - from median S1 and S3&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skyspec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.fits&#39;</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">))</span>
+
+        <span class="c1"># Save spectra to fits file</span>
+        <span class="c1"># Headers</span>
+        <span class="n">prihdr</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">prihdr</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="s1">&#39;Sky Spectrum on each detector, and median sky spectrum&#39;</span><span class="p">)</span>
+        <span class="n">hdr1D</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">()</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;SIMPLE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;BITPIX&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;NAXIS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;NAXIS1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2048</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;PCOUNT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;GCOUNT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;CUNIT1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ifu_header</span><span class="p">[</span><span class="s1">&#39;CUNIT3&#39;</span><span class="p">]</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;CRPIX1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ifu_header</span><span class="p">[</span><span class="s1">&#39;CRPIX3&#39;</span><span class="p">]</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;CRVAL1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ifu_header</span><span class="p">[</span><span class="s1">&#39;CRVAL3&#39;</span><span class="p">]</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;CDELT1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ifu_header</span><span class="p">[</span><span class="s1">&#39;CDELT3&#39;</span><span class="p">]</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;BUNIT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cgs&#39;</span>
+
+        <span class="n">hdr1D_1</span><span class="p">,</span> <span class="n">hdr1D_2</span><span class="p">,</span> <span class="n">hdr1D_3</span> <span class="o">=</span> <span class="n">hdr1D</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">hdr1D</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">hdr1D</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">hdr1D</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span>
+        <span class="n">hdr1D_1</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DETECTOR1&#39;</span>
+        <span class="n">hdr1D_2</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DETECTOR2&#39;</span>
+        <span class="n">hdr1D_3</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DETECTOR3&#39;</span>
+
+        <span class="c1"># Extensions</span>
+        <span class="n">hdu</span>     <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">prihdr</span><span class="p">)</span>
+        <span class="n">hdu_all</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">ImageHDU</span><span class="p">(</span><span class="n">skyspec_1D_all</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">hdr1D</span><span class="p">)</span>
+        <span class="n">hdu_1</span>   <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">ImageHDU</span><span class="p">(</span><span class="n">skyspec_1D</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="n">hdr1D_1</span><span class="p">)</span>
+        <span class="n">hdu_2</span>   <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">ImageHDU</span><span class="p">(</span><span class="n">skyspec_1D</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="n">hdr1D_2</span><span class="p">)</span>
+        <span class="n">hdu_3</span>   <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">ImageHDU</span><span class="p">(</span><span class="n">skyspec_1D</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="n">hdr1D_3</span><span class="p">)</span>
+
+        <span class="c1"># Create hdu list and write</span>
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">hdu</span><span class="p">,</span> <span class="n">hdu_all</span><span class="p">,</span> <span class="n">hdu_1</span><span class="p">,</span> <span class="n">hdu_2</span><span class="p">,</span> <span class="n">hdu_3</span><span class="p">])</span>
+        <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skyspec</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Saved fits file to &#39;</span><span class="p">,</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename_skyspec</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="subtract_sky_residual_spectra"><a class="viewcode-back" href="../../api.html#kmos_tools.sky_clean.subtract_sky_residual_spectra">[docs]</a><span class="k">def</span> <span class="nf">subtract_sky_residual_spectra</span><span class="p">(</span><span class="n">exposure</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Subtract residual sky spectrum from each IFU using relevant detector sky spectrum</span>
+
+<span class="sd">    Rescales 1D sky spectrum :math:`s_\lambda` in each spatial pixel by :math:`A_{x, y}` \</span>
+<span class="sd">    for each IFU such that sky subtracted spectrum:</span>
+
+<span class="sd">    .. math:: f_{x, y, \lambda}^\mathrm{skysub} = f_{x, y, \lambda} - A_{x, y}s_\lambda</span>
+
+<span class="sd">    Where :math:`A_{x, y}` is obtained by minimising:</span>
+
+<span class="sd">    .. math:: \left( \frac{f_{x, y, \lambda}^\mathrm{skysub}}{\sigma_\lambda} \right)^2</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        exposure (object): exposure object</span>
+<span class="sd">        clobber (bool): Make a new sky spectrum if it already exists</span>
+<span class="sd">        plot (bool): make and save a plot of the median sky spectra</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Saves FITS file with 1D sky spectra for each detector with filename ``*_SKYSUB.fits``</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Do sky subtraction</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skycorr</span><span class="p">)</span> <span class="ow">and</span> <span class="n">clobber</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skycorr</span><span class="p">,</span> <span class="s1">&#39;already exists, moving on...&#39;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">skyspec_all</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skyspec</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ifu</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdulist</span><span class="p">[</span><span class="s1">&#39;IFU.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ifu</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.DATA&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ext</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="c1"># Finding detector</span>
+                <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">ifu</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
+                    <span class="n">detector</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="mi">9</span> <span class="o">&lt;=</span> <span class="n">ifu</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">:</span>
+                    <span class="n">detector</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">elif</span> <span class="mi">17</span> <span class="o">&lt;=</span> <span class="n">ifu</span> <span class="o">&lt;=</span> <span class="mi">24</span><span class="p">:</span>
+                    <span class="n">detector</span> <span class="o">=</span> <span class="mi">3</span>
+
+                <span class="n">skyspec</span>  <span class="o">=</span> <span class="n">skyspec_all</span><span class="p">[</span><span class="n">detector</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+                <span class="c1"># Do sky subtraction</span>
+                <span class="k">if</span> <span class="n">skyspec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No sky spectrum for detector </span><span class="si">%i</span><span class="s1">, so using the median&#39;</span> <span class="o">%</span> <span class="n">detector</span><span class="p">)</span>
+                    <span class="n">skyspec</span> <span class="o">=</span> <span class="n">skyspec_all</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+                <span class="c1"># Estimate 1D error from std of flux</span>
+                <span class="n">dat3D</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">err1D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">dat3D</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dat3D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dat3D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+                <span class="c1"># Get rescaling # TODO better minimise</span>
+                <span class="n">skyscale2D</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dat3D</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">chisquared2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dat3D</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat3D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat3D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])):</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="n">Parameters</span><span class="p">()</span>
+                    <span class="n">params</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">sky_residual</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">skyspec</span><span class="p">,</span> <span class="n">dat3D</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">err1D</span><span class="p">))</span>
+                    <span class="n">skyscale2D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>   <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">chisquared2D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">chisqr</span>
+
+                <span class="c1"># Sky subtract</span>
+                <span class="n">data_corr</span> <span class="o">=</span> <span class="n">dat3D</span> <span class="o">-</span> <span class="n">skyscale2D</span><span class="o">*</span><span class="n">skyspec</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+
+                <span class="c1"># Subtract median flux if not S2</span>
+                <span class="n">ifu_comment</span> <span class="o">=</span> <span class="s1">&#39;HIERARCH ESO OCS ARM&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ifu</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; NAME&#39;</span>
+                <span class="k">if</span> <span class="s1">&#39;S2&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="p">[</span><span class="n">ifu_comment</span><span class="p">]:</span>
+                    <span class="n">data_corr</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">data_corr</span><span class="p">)</span>
+
+                <span class="n">ext</span><span class="o">.</span><span class="n">data</span>  <span class="o">=</span> <span class="n">data_corr</span>
+                <span class="n">now</span>       <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                <span class="n">ext</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;SKY RESIDUALS CORRECTED&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+
+        <span class="n">exposure</span><span class="o">.</span><span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">filename_skycorr</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Saved Sky Fix to&#39;</span><span class="p">,</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename_skycorr</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="sky_residual"><a class="viewcode-back" href="../../api.html#kmos_tools.sky_clean.sky_residual">[docs]</a><span class="k">def</span> <span class="nf">sky_residual</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">sky</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Residual for 1D sky-scaling</span>
+
+<span class="sd">    Used to find optimal rescaling of 1D spectrum, A,</span>
+<span class="sd">    for each spatial pixel</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        R_i = \frac{(f_i - A s_i)}{\sigma_i} \\</span>
+<span class="sd">        \chi^2 = \sum_i R_i^2</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        params (params): parameters</span>
+<span class="sd">        sky (ndarray): 1D sky spectrum</span>
+<span class="sd">        data (ndarray): 3D data cube</span>
+<span class="sd">        err (ndarray): 1D error spectrum</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        residual</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;scale&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">((</span><span class="n">data</span> <span class="o">-</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">sky</span><span class="p">)</span><span class="o">/</span><span class="n">err</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Charlotte Mason
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

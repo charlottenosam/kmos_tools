@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>kmos_tools.star_offsets &mdash; KMOS tools 0.post5+g572a5db documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script type="text/javascript" src="../../_static/copybutton.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> KMOS tools
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post5+g572a5db
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">KMOS Reduction Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">KMOS tools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>kmos_tools.star_offsets</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for kmos_tools.star_offsets</h1><div class="highlight"><pre>
+<span></span><span class="c1"># kmos_tools/star_offsets.py</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Module to find stars in an exposure, and fit their spatial positions to use in ``kmos_combine --user_shifts``</span>
+
+
+<span class="sd">    Usage::</span>
+
+<span class="sd">        # List of frames to check (should be all the frames you want to combine)</span>
+<span class="sd">        frame_list = [&#39;frame1.fits&#39;, &#39;frame2.fits&#39;]</span>
+
+<span class="sd">        fname_stars   = &#39;stars.txt&#39;   # File to save star parameters to</span>
+<span class="sd">        fname_combine = &#39;combine.sof&#39; # .sof file to create</span>
+
+<span class="sd">        kt.star_positions_batch(frame_list, psf_cut=0.8, starparams_filename=fname_stars, combinefiles_filename=fname_combine)</span>
+
+<span class="sd">        fname_usershifts = &#39;usershifts.txt&#39; # file to save usershifts to</span>
+
+<span class="sd">        kt.make_user_shifts_file(starparams_filename=fname_stars, usershifts_filename=fname_usershifts)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">kmos_tools</span> <span class="k">as</span> <span class="nn">kt</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;make_user_shifts_file&quot;</span><span class="p">,</span> <span class="s2">&quot;star_positions_batch&quot;</span><span class="p">,</span> <span class="s2">&quot;find_star_ifu&quot;</span><span class="p">,</span> <span class="s2">&quot;star_fit_profile&quot;</span><span class="p">,</span> <span class="s2">&quot;star_psf&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="make_user_shifts_file"><a class="viewcode-back" href="../../api.html#kmos_tools.star_offsets.make_user_shifts_file">[docs]</a><span class="k">def</span> <span class="nf">make_user_shifts_file</span><span class="p">(</span><span class="n">starparams_filename</span><span class="p">,</span> <span class="n">usershifts_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create file of user shifts to use with ``kmos_combine --method=&quot;user&quot;``</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        To run ``kmos_combine`` you *must* use the frames in the order they are used here</span>
+<span class="sd">        i.e. so the offset matches the right frame</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        starparams_filename (str): filepath of table with the star positions</span>
+<span class="sd">        usershifts_filename (str, optional): filename to save usershift table to</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Get info from star table</span>
+    <span class="n">star_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">starparams_filename</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">n_frames</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">star_table</span><span class="p">)</span>
+
+    <span class="c1"># Calculate shifts and save to file</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Calculating shifts&#39;</span><span class="p">)</span>
+    <span class="n">shiftx</span><span class="p">,</span> <span class="n">shifty</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">n_frames</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">n_frames</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_frames</span><span class="p">):</span>
+        <span class="n">shiftx</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">star_table</span><span class="p">[</span><span class="s1">&#39;XCEN_pix&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">star_table</span><span class="p">[</span><span class="s1">&#39;XCEN_pix&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">shifty</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">star_table</span><span class="p">[</span><span class="s1">&#39;YCEN_pix&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">star_table</span><span class="p">[</span><span class="s1">&#39;YCEN_pix&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">usershifts_filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usershifts_filename</span> <span class="o">=</span> <span class="n">starparams_filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;_usershifts.txt&#39;</span><span class="p">)</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">usershifts_filename</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">shiftx</span><span class="p">,</span> <span class="n">shifty</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;    &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Saved shifts file to&#39;</span><span class="p">,</span> <span class="n">usershifts_filename</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="star_positions_batch"><a class="viewcode-back" href="../../api.html#kmos_tools.star_offsets.star_positions_batch">[docs]</a><span class="k">def</span> <span class="nf">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edge_x</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">edge_y</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span>
+                         <span class="n">starparams_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given a list of exposure file names, will find stars and measure PSFs.</span>
+
+<span class="sd">    Given a list of exposure file names, will find stars and measure PSFs.</span>
+<span class="sd">    Then creates a list of frames with PSF FWHM below a given value, saves</span>
+<span class="sd">    the list of star positions (to calculate user shifts) and creates a .sof</span>
+<span class="sd">    file of the &#39;good&#39; frames.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame_list (list): List of file names of individual ``SCI_RECONSTRUCTED.fits`` files</span>
+<span class="sd">        psf_cut (float): max PSF to use for combining (in arcsec) [default = 0.8 arcsec]</span>
+<span class="sd">        edge_x (float): x_star &gt; edge_x to include (i.e. not on the edge) [default = 2 pixels]</span>
+<span class="sd">        edge_y (float): y_star &gt; edge_y to include (i.e. not on the edge) [default = 2 pixels]</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        starparams_filename (str): table with parameters of good stars</span>
+<span class="sd">        combinefiles_filename (str): .sof file with list of good frames</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">combine_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">star_table</span><span class="p">,</span> <span class="n">star_table_bad</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">starparams_filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">starparams_filename</span> <span class="o">=</span> <span class="n">frame_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_products&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;_products/star_psf_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span><span class="o">+</span><span class="s1">&#39;.txt&#39;</span>
+    <span class="k">if</span> <span class="n">combinefiles_filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">combinefiles_filename</span> <span class="o">=</span> <span class="n">frame_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_products&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;_products/combine_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span><span class="o">+</span><span class="s1">&#39;.sof&#39;</span>
+
+    <span class="k">for</span> <span class="n">ff</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame_list</span><span class="p">):</span>
+        <span class="n">sci_reconstructed</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">Exposure</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+
+        <span class="c1"># Look for a star in the frame (based on having `star` in the target name) and fit a gaussian profile to it</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span> <span class="o">=</span> <span class="n">star_psf</span><span class="p">(</span><span class="n">sci_reconstructed</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No star in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">frame</span><span class="p">)</span>
+            <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;# no star&#39;</span>
+
+        <span class="k">if</span> <span class="n">psf_fwhm</span> <span class="o">&lt;</span> <span class="n">psf_cut</span> <span class="ow">and</span> <span class="n">sci_reconstructed</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;A&#39;</span> <span class="ow">and</span> <span class="n">psf_center_x</span> <span class="o">&gt;</span> <span class="n">edge_x</span> <span class="ow">and</span> <span class="n">psf_center_y</span> <span class="o">&gt;</span> <span class="n">edge_y</span><span class="p">:</span>
+            <span class="n">combine_files</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">frame</span><span class="p">,</span> <span class="s1">&#39;SCI_RECONSTRUCTED&#39;</span><span class="p">])</span>
+            <span class="n">star_table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">frame</span><span class="p">,</span> <span class="n">sci_reconstructed</span><span class="o">.</span><span class="n">frame_time</span><span class="p">,</span> <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">psf_center_x</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+            <span class="n">star_table_bad</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">frame</span><span class="p">,</span> <span class="n">sci_reconstructed</span><span class="o">.</span><span class="n">frame_time</span><span class="p">,</span> <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Something wrong with PSF in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">frame</span><span class="p">)</span>
+            <span class="n">star_table_bad</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">frame</span><span class="p">,</span> <span class="n">sci_reconstructed</span><span class="o">.</span><span class="n">frame_time</span><span class="p">,</span> <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span><span class="p">])</span>
+
+        <span class="k">del</span> <span class="n">sci_reconstructed</span>
+
+    <span class="c1"># Save star parameter output</span>
+    <span class="n">star_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">star_table</span><span class="p">)</span>
+    <span class="n">med_FWHM</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">star_table</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">med_ba</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">star_table</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">med_pa</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">star_table</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">starparams_filename</span><span class="p">,</span> <span class="n">star_table</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;    &#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s1">&#39;Star PSFs. Median FWHM = </span><span class="si">%.3f</span><span class="s1"> Median BA = </span><span class="si">%.3f</span><span class="s1"> Median PA = </span><span class="si">%.3f</span><span class="s1"> </span><span class="se">\n</span><span class="s1">Frame    OB_time     XCEN_pix     YCEN_pix    FWHM_arcsec    BA    PA_deg&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">med_FWHM</span><span class="p">,</span> <span class="n">med_ba</span><span class="p">,</span> <span class="n">med_pa</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;# &#39;</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">starparams_filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;_bad.txt&#39;</span><span class="p">),</span> <span class="n">star_table_bad</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;    &#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s1">&#39;Bad Star PSFs. </span><span class="se">\n</span><span class="s1">Frame    OB_time     XCEN_pix     YCEN_pix    FWHM_arcsec    BA    PA_deg&#39;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;# &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Saved PSF info file to </span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="n">starparams_filename</span><span class="p">)</span>
+
+    <span class="c1"># Save .sof file with all the successful frames</span>
+    <span class="n">combine_files</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">combine_files</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">combinefiles_filename</span><span class="p">,</span> <span class="n">combine_files</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Saved combine.sof file to </span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="n">combinefiles_filename</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="find_star_ifu"><a class="viewcode-back" href="../../api.html#kmos_tools.star_offsets.find_star_ifu">[docs]</a><span class="k">def</span> <span class="nf">find_star_ifu</span><span class="p">(</span><span class="n">exposure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the IFUs in the SCI_RECONSTRUCTED cubes containing a star</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        exposure (object): exposure object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        exposure.star_ifu (int): IFU containing star</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">exposure</span><span class="o">.</span><span class="n">star_ifu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">ifu</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+
+            <span class="n">ifu_comment</span> <span class="o">=</span> <span class="s1">&#39;HIERARCH ESO OCS ARM</span><span class="si">%i</span><span class="s1"> NAME&#39;</span> <span class="o">%</span> <span class="n">ifu</span>
+
+            <span class="c1"># Look for star in name of IFU targe</span>
+            <span class="k">if</span> <span class="s1">&#39;star&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="p">[</span><span class="n">ifu_comment</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Star found in IFU </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ifu</span><span class="p">)</span>
+                <span class="n">exposure</span><span class="o">.</span><span class="n">star_ifu</span> <span class="o">=</span> <span class="n">ifu</span>
+
+    <span class="k">return</span> <span class="n">exposure</span><span class="o">.</span><span class="n">star_ifu</span></div>
+
+
+<div class="viewcode-block" id="star_fit_profile"><a class="viewcode-back" href="../../api.html#kmos_tools.star_offsets.star_fit_profile">[docs]</a><span class="k">def</span> <span class="nf">star_fit_profile</span><span class="p">(</span><span class="n">exposure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fit gaussian profiles to star to find PSFs</span>
+
+<span class="sd">    Using ESO command line pipeline tools (``esorex``) extract the star from the exposure,</span>
+<span class="sd">    fit a Gaussian profile to it, and save the fitted star to a new fits file ``star_file_name``.</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        exposure (object): exposure object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        star_file_name (str): filepath of FITS file with star with PSF fitted to it</span>
+<span class="sd">        invert (bool): was the star flux weird and inverted?</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Find IFU star is on</span>
+    <span class="k">if</span> <span class="n">exposure</span><span class="o">.</span><span class="n">star_ifu</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exposure</span><span class="o">.</span><span class="n">star_ifu</span> <span class="o">=</span> <span class="n">find_star_ifu</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span>
+
+    <span class="c1"># Make a copy of the IFU with the star</span>
+    <span class="n">kmo_copy</span> <span class="o">=</span> <span class="s1">&#39;esorex kmo_copy -x=1 -y=1 -z=1 -xsize=14 -ysize=14 -zsize=2048 -ifu=</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">star_ifu</span><span class="p">),</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">kmo_copy</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">copyfile</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">getstatusoutput</span><span class="p">(</span><span class="s2">&quot;find . -maxdepth 1 -iname copy.fits&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Collapse the IFU to make an image</span>
+    <span class="n">kmo_make_image</span> <span class="o">=</span> <span class="s1">&#39;esorex kmo_make_image </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">copyfile</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">kmo_make_image</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">makeimagefile</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">getstatusoutput</span><span class="p">(</span><span class="s2">&quot;find . -maxdepth 1 -iname make_image.fits&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check the image, if weird, invert</span>
+    <span class="n">image_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">makeimagefile</span><span class="p">)</span>
+    <span class="n">image</span>     <span class="o">=</span> <span class="n">image_hdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">test_star</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="n">invert</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">test_star</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Weird star in </span><span class="si">%s</span><span class="s1">, multiplying image by -1&#39;</span> <span class="o">%</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">image_hdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">image</span>
+        <span class="n">image_hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">makeimagefile</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">invert</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Rename star file</span>
+    <span class="n">exposure</span><span class="o">.</span><span class="n">star_image_file</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.fits&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_star_image.fits&#39;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;cp </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">makeimagefile</span><span class="p">,</span> <span class="n">exposure</span><span class="o">.</span><span class="n">star_image_file</span><span class="p">))</span>
+
+    <span class="c1"># Fit profile to star image</span>
+    <span class="n">kmo_fit_profile</span> <span class="o">=</span> <span class="s1">&#39;esorex kmo_fit_profile </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">exposure</span><span class="o">.</span><span class="n">star_image_file</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">kmo_fit_profile</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">fitprofilefile</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">getstatusoutput</span><span class="p">(</span><span class="s2">&quot;find . -maxdepth 1 -iname fit_profile.fits&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Tidy up</span>
+    <span class="n">star_file_name</span>     <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.fits&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_star_psf.fits&#39;</span>
+    <span class="n">rename_fit_profile</span> <span class="o">=</span> <span class="s1">&#39;mv </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fitprofilefile</span><span class="p">,</span> <span class="n">star_file_name</span><span class="p">)</span>
+    <span class="n">delete_temps</span>       <span class="o">=</span> <span class="s1">&#39;rm </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">copyfile</span><span class="p">,</span> <span class="n">makeimagefile</span><span class="p">)</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">rename_fit_profile</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">delete_temps</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Saved star psf profile to &#39;</span><span class="o">+</span><span class="n">star_file_name</span><span class="p">)</span>
+
+    <span class="c1"># Filename to save star IFU to</span>
+    <span class="n">exposure</span><span class="o">.</span><span class="n">starfile</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.fits&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_star_psf.fits&#39;</span>
+
+    <span class="k">return</span> <span class="n">star_file_name</span><span class="p">,</span> <span class="n">invert</span></div>
+
+
+<div class="viewcode-block" id="star_psf"><a class="viewcode-back" href="../../api.html#kmos_tools.star_offsets.star_psf">[docs]</a><span class="k">def</span> <span class="nf">star_psf</span><span class="p">(</span><span class="n">exposure</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vb</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the PSF profiles of the star for calculating user shifts</span>
+
+<span class="sd">    Read the file ``star_file_name`` and return the main parameters</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        exposure (object): exposure object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        psf_center_x (float): PSF centroid x in pixels</span>
+<span class="sd">        psf_center_y (float): PSF centroid y in pixels</span>
+<span class="sd">        psf_fwhm (float): PSF FWHM in arcsec</span>
+<span class="sd">        psf_ba (float): PSF BA # TODO I don&#39;t remember what this is!!</span>
+<span class="sd">        psf_pa (float): PSF position angle in degrees</span>
+<span class="sd">        exposure.invert (bool): is the flux weird?</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">exposure</span><span class="o">.</span><span class="n">invert</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">clobber</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="o">~</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">starfile</span><span class="p">):</span>
+        <span class="n">exposure</span><span class="o">.</span><span class="n">starfile</span><span class="p">,</span> <span class="n">exposure</span><span class="o">.</span><span class="n">invert</span> <span class="o">=</span> <span class="n">exposure</span><span class="o">.</span><span class="n">star_fit_profile</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">exposure</span><span class="o">.</span><span class="n">invert</span><span class="p">:</span>
+        <span class="n">invert_comment</span> <span class="o">=</span> <span class="s1">&#39;# weird star, inverted flux&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">invert_comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">star_hdulist</span>  <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">starfile</span><span class="p">)</span>
+    <span class="n">star_hdr</span>      <span class="o">=</span> <span class="n">star_hdulist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">header</span>
+
+    <span class="c1"># Load fit parameters</span>
+    <span class="n">psf_center_x</span> <span class="o">=</span> <span class="n">star_hdr</span><span class="p">[</span><span class="s1">&#39;HIERARCH ESO PRO FIT CENTROID X&#39;</span><span class="p">]</span>
+    <span class="n">psf_center_y</span> <span class="o">=</span> <span class="n">star_hdr</span><span class="p">[</span><span class="s1">&#39;HIERARCH ESO PRO FIT CENTROID Y&#39;</span><span class="p">]</span>
+    <span class="n">psf_r_x</span>      <span class="o">=</span> <span class="n">star_hdr</span><span class="p">[</span><span class="s1">&#39;HIERARCH ESO PRO FIT RADIUS X&#39;</span><span class="p">]</span>
+    <span class="n">psf_r_y</span>      <span class="o">=</span> <span class="n">star_hdr</span><span class="p">[</span><span class="s1">&#39;HIERARCH ESO PRO FIT RADIUS Y&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Get FWHM, BA, and PA</span>
+    <span class="n">psf_fwhm</span> <span class="o">=</span> <span class="mf">2.3548</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">psf_r_x</span> <span class="o">+</span> <span class="n">psf_r_y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.2</span>  <span class="c1"># fwhm in arcsec</span>
+    <span class="n">psf_ba</span>   <span class="o">=</span> <span class="n">psf_r_y</span> <span class="o">/</span> <span class="n">psf_r_x</span>
+    <span class="n">psf_pa</span>   <span class="o">=</span> <span class="n">star_hdr</span><span class="p">[</span><span class="s1">&#39;HIERARCH ESO PRO FIT ROT&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">psf_pa</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">:</span>
+        <span class="n">psf_pa</span> <span class="o">=</span> <span class="n">psf_pa</span> <span class="o">%</span> <span class="mf">360.</span>
+
+    <span class="k">if</span> <span class="n">vb</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;XPIX=</span><span class="si">%.2f</span><span class="s1">, YPIX=</span><span class="si">%.2f</span><span class="s1">, FWHM=</span><span class="si">%.3f</span><span class="s1"> arcsec, BA=</span><span class="si">%.3f</span><span class="s1">, PA=</span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Charlotte Mason
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
