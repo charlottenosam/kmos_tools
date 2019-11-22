@@ -6,5 +6,13 @@ exclude =
     dist,
     versioneer.py,
     kmos_tools/_version.py,
+    kmos_tools/__init__.py
     docs/source/conf.py
-max-line-length = 115
+max-line-length = 300
+ignore =
+	E221,
+	E701,
+	E731,
+	E226,
+	E722,
+	E127

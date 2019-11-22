@@ -164,6 +164,7 @@ def find_nearest_i(value, array):
     idx = (np.abs(array-value)).argmin()
     return idx
 
+
 def find_nearest(value, array):
     """Find the nearest number to a given value in an array
 

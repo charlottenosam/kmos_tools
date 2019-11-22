@@ -192,7 +192,7 @@ def star_fit_profile(exposure):
     # Check the image, if weird, invert
     image_hdu = fits.open(makeimagefile)
     image     = image_hdu[1].data
-    test_star =  np.nansum(image[3:-3, 3:-3] - np.nanmedian(image[3:-3, 3:-3]))
+    test_star = np.nansum(image[3:-3, 3:-3] - np.nanmedian(image[3:-3, 3:-3]))
     invert = False
     if test_star < 0.:
         print('WARNING: Weird star in %s, multiplying image by -1' % exposure.filename)
