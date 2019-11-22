@@ -35,7 +35,7 @@ I use the following settings:
 
 Do additional sky subtraction correction to individual exposures
 
-.. note:: ESO pipeline v<1.4 may need to do flux calibration correction, to divide by DIT length. Can use ``kmos_tools.pipeline_fixes.flux_fix()``.
+.. note:: ESO pipeline v<1.4 may need to do flux calibration correction, to divide by DIT length. Can use :func:`kmos_tools.pipeline_fixes.flux_fix`.
 
 .. code-block:: python
 

@@ -6,6 +6,11 @@ cache:
     - $HOME/.cache/pip
     - $HOME/.ccache  # https://github.com/travis-ci/travis-ci/issues/5853
 
+env:
+  global:
+    # Doctr deploy key for charlottenosam/kmos_tools
+    - secure: "u1tEIo0yN2LiUAvJaPzEdnn+I0bQyq42IroLbjQPZUWaHT6UM7gj6wMeZTgz6y8+KOAc4QJ5Uafkmem2BXqlIR11W00RCVBy4S6FaDcLU3xh2GghW/gEX+lTLqnblbQbfUTOfPzktLFt4TSPHOX9urt9dftxCXgRuS1bvk0gToB3cUSDYahv4xZZRCA1rGGc2j+5jVQ+Znk+zihF9jnlmQ/6eDsuQt0ubQp4pLSEJM2WoU8HPY8p4aw5Jix4sye46vgV91zoQCNtza8wZlrXMjVyGj1uFKkXCdzXMoKMiSlCnxlqTaARuaJpWc6HCAB73m1ZcnJ7iVbJgwO7ykXk/r4LxdRZmK330JdTs6q698jYPf3d7DWoF1t1/XhPNaeTNzvUby6vwpvmlLl/M4XP4ne+UWI7++CjZjctmkX0HrqNe2jGaadFXKbO/DMBOh+CEe1OsCQHoSEHCQAgTV7wuRhTtTJirAMH3QVj8stV+zb5dfWEhQr7ebu7j5qrdIMA5da8CGl1h5tYqfIaw+4dY2McMPAdgcVhX+YAPfsg3O0JjQKgK5yc3XlgKl5Hbk1G2pXU8R0nS5rR0jSFIdt7Dx1uYNcnXEiHBlPNXrLuuGi7rJqrc1bCkpR/IcEQIAHMMteIohlUeeifALLjTrw9iGabC1ZBca2LhlgaKvQOgjI="
+
 install:
   # Install this package and the packages listed in requirements.txt.
   - pip install .
@@ -18,3 +23,7 @@ script:
   - codecov  # Upload the report to codecov.
   - flake8  # Enforce code style ('relaxed' line length limit is set in .flake8 config file).
   - make -C docs html  # Build the documentation.
+  - set -e  # If any of the following steps fail, just stop at that point.
+  - make -C docs html  # Build the documentation.
+  - pip install doctr
+  - doctr deploy --built-docs docs/build/html .  # Publish the documentation.
