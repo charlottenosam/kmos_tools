@@ -92,7 +92,9 @@ Finds stars in exposures, measures their PSF FWHM and positions and creates a li
 	fname_stars   = 'stars.txt'   # File to save star parameters to
 	fname_combine = 'combine.sof' # .sof file to create
 
-	kt.star_positions_batch(frame_list, psf_cut=0.8, starparams_filename=fname_stars, combinefiles_filename=fname_combine)
+	kt.star_positions_batch(frame_list, psf_cut=0.8, star_ifu=None, starparams_filename=fname_stars, combinefiles_filename=fname_combine)
+
+.. note:: The code tries to find stars in the exposures by looking for ``star`` in the target name of the IFU (``HIERARCH ESO OCS ARM# NAME`` header value). You can set it manually by setting ``star_ifu`` to the relevant IFU number.
 
 5.2. Calculate shifts between frames
 ------------------------------------

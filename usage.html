@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>KMOS Reduction Steps &mdash; KMOS tools 0.1.0.post4+g9871dcf documentation</title>
+  <title>KMOS Reduction Steps &mdash; KMOS tools 0.1.0.post6+ga3fec7e documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0.post4+g9871dcf
+                0.1.0.post6+ga3fec7e
               </div>
             
           
@@ -254,8 +254,12 @@
 <span class="n">fname_stars</span>   <span class="o">=</span> <span class="s1">&#39;stars.txt&#39;</span>   <span class="c1"># File to save star parameters to</span>
 <span class="n">fname_combine</span> <span class="o">=</span> <span class="s1">&#39;combine.sof&#39;</span> <span class="c1"># .sof file to create</span>
 
-<span class="n">kt</span><span class="o">.</span><span class="n">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="n">fname_combine</span><span class="p">)</span>
+<span class="n">kt</span><span class="o">.</span><span class="n">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">star_ifu</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="n">fname_combine</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The code tries to find stars in the exposures by looking for <code class="docutils literal notranslate"><span class="pre">star</span></code> in the target name of the IFU (<code class="docutils literal notranslate"><span class="pre">HIERARCH</span> <span class="pre">ESO</span> <span class="pre">OCS</span> <span class="pre">ARM#</span> <span class="pre">NAME</span></code> header value). You can set it manually by setting <code class="docutils literal notranslate"><span class="pre">star_ifu</span></code> to the relevant IFU number.</p>
 </div>
 </div>
 <div class="section" id="calculate-shifts-between-frames">

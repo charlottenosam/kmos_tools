@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; KMOS tools 0.1.0.post4+g9871dcf documentation</title>
+  <title>API &mdash; KMOS tools 0.1.0.post6+ga3fec7e documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0.post4+g9871dcf
+                0.1.0.post6+ga3fec7e
               </div>
             
           
@@ -355,7 +355,7 @@ i.e. so the offset matches the right frame</p>
 
 <dl class="function">
 <dt id="kmos_tools.star_offsets.star_positions_batch">
-<code class="sig-prename descclassname">kmos_tools.star_offsets.</code><code class="sig-name descname">star_positions_batch</code><span class="sig-paren">(</span><em class="sig-param">frame_list</em>, <em class="sig-param">psf_cut=0.8</em>, <em class="sig-param">edge_x=2.0</em>, <em class="sig-param">edge_y=2.0</em>, <em class="sig-param">starparams_filename=None</em>, <em class="sig-param">combinefiles_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/star_offsets.html#star_positions_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.star_offsets.star_positions_batch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">kmos_tools.star_offsets.</code><code class="sig-name descname">star_positions_batch</code><span class="sig-paren">(</span><em class="sig-param">frame_list</em>, <em class="sig-param">psf_cut=0.8</em>, <em class="sig-param">edge_x=2.0</em>, <em class="sig-param">edge_y=2.0</em>, <em class="sig-param">star_ifu=None</em>, <em class="sig-param">starparams_filename=None</em>, <em class="sig-param">combinefiles_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/star_offsets.html#star_positions_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.star_offsets.star_positions_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of exposure file names, will find stars and measure PSFs.</p>
 <p>Given a list of exposure file names, will find stars and measure PSFs.
 Then creates a list of frames with PSF FWHM below a given value, saves
@@ -368,6 +368,7 @@ file of the ‘good’ frames.</p>
 <li><p><strong>psf_cut</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – max PSF to use for combining (in arcsec) [default = 0.8 arcsec]</p></li>
 <li><p><strong>edge_x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – x_star &gt; edge_x to include (i.e. not on the edge) [default = 2 pixels]</p></li>
 <li><p><strong>edge_y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – y_star &gt; edge_y to include (i.e. not on the edge) [default = 2 pixels]</p></li>
+<li><p><strong>star_if</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – IFU star is on</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yields</dt>

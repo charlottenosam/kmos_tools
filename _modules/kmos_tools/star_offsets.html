@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>kmos_tools.star_offsets &mdash; KMOS tools 0.1.0.post4+g9871dcf documentation</title>
+  <title>kmos_tools.star_offsets &mdash; KMOS tools 0.1.0.post6+ga3fec7e documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.1.0.post4+g9871dcf
+                0.1.0.post6+ga3fec7e
               </div>
             
           
@@ -220,7 +220,7 @@
     <span class="k">return</span></div>
 
 
-<div class="viewcode-block" id="star_positions_batch"><a class="viewcode-back" href="../../api.html#kmos_tools.star_offsets.star_positions_batch">[docs]</a><span class="k">def</span> <span class="nf">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edge_x</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">edge_y</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span>
+<div class="viewcode-block" id="star_positions_batch"><a class="viewcode-back" href="../../api.html#kmos_tools.star_offsets.star_positions_batch">[docs]</a><span class="k">def</span> <span class="nf">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edge_x</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">edge_y</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">star_ifu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">starparams_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Given a list of exposure file names, will find stars and measure PSFs.</span>
 
@@ -234,6 +234,7 @@
 <span class="sd">        psf_cut (float): max PSF to use for combining (in arcsec) [default = 0.8 arcsec]</span>
 <span class="sd">        edge_x (float): x_star &gt; edge_x to include (i.e. not on the edge) [default = 2 pixels]</span>
 <span class="sd">        edge_y (float): y_star &gt; edge_y to include (i.e. not on the edge) [default = 2 pixels]</span>
+<span class="sd">        star_if (int): IFU star is on</span>
 
 <span class="sd">    Yields:</span>
 <span class="sd">        starparams_filename (str): table with parameters of good stars</span>
@@ -250,6 +251,7 @@
 
     <span class="k">for</span> <span class="n">ff</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame_list</span><span class="p">):</span>
         <span class="n">sci_reconstructed</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">Exposure</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+        <span class="n">sci_reconstructed</span><span class="o">.</span><span class="n">star_ifu</span> <span class="o">=</span> <span class="n">star_ifu</span>
 
         <span class="c1"># Look for a star in the frame (based on having `star` in the target name) and fit a gaussian profile to it</span>
         <span class="k">try</span><span class="p">:</span>
