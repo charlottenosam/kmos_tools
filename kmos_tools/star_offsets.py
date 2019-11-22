@@ -64,7 +64,7 @@ def make_user_shifts_file(starparams_filename, usershifts_filename=None):
     return
 
 
-def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2.,
+def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2., star_ifu=None,
                          starparams_filename=None, combinefiles_filename=None):
     """Given a list of exposure file names, will find stars and measure PSFs.
 
@@ -78,6 +78,7 @@ def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2.,
         psf_cut (float): max PSF to use for combining (in arcsec) [default = 0.8 arcsec]
         edge_x (float): x_star > edge_x to include (i.e. not on the edge) [default = 2 pixels]
         edge_y (float): y_star > edge_y to include (i.e. not on the edge) [default = 2 pixels]
+        star_if (int): IFU star is on
 
     Yields:
         starparams_filename (str): table with parameters of good stars
@@ -94,6 +95,7 @@ def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2.,
 
     for ff, frame in enumerate(frame_list):
         sci_reconstructed = kt.Exposure(frame)
+        sci_reconstructed.star_ifu = star_ifu
 
         # Look for a star in the frame (based on having `star` in the target name) and fit a gaussian profile to it
         try:
