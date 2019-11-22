@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>kmos_tools.star_offsets &mdash; KMOS tools 0.1.0.post2+gbaf8cf4 documentation</title>
+  <title>kmos_tools.star_offsets &mdash; KMOS tools 0.1.0.post3+g6e3cdbc documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.1.0.post2+gbaf8cf4
+                0.1.0.post3+g6e3cdbc
               </div>
             
           
@@ -348,7 +348,7 @@
     <span class="c1"># Check the image, if weird, invert</span>
     <span class="n">image_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">makeimagefile</span><span class="p">)</span>
     <span class="n">image</span>     <span class="o">=</span> <span class="n">image_hdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-    <span class="n">test_star</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="n">test_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]))</span>
     <span class="n">invert</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">test_star</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Weird star in </span><span class="si">%s</span><span class="s1">, multiplying image by -1&#39;</span> <span class="o">%</span> <span class="n">exposure</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
