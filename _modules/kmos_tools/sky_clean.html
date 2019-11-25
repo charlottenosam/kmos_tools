@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>kmos_tools.sky_clean &mdash; KMOS tools 0.1.0.post8+gda0868b documentation</title>
+  <title>kmos_tools.sky_clean &mdash; KMOS tools 0.1.0.post9+ga534c6e documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.1.0.post8+gda0868b
+                0.1.0.post9+ga534c6e
               </div>
             
           
@@ -175,14 +175,20 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;make_sky_residual_spectra&quot;</span><span class="p">,</span> <span class="s2">&quot;subtract_sky_residual_spectra&quot;</span><span class="p">,</span> <span class="s2">&quot;sky_residual&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="make_sky_residual_spectra"><a class="viewcode-back" href="../../api.html#kmos_tools.sky_clean.make_sky_residual_spectra">[docs]</a><span class="k">def</span> <span class="nf">make_sky_residual_spectra</span><span class="p">(</span><span class="n">exposure</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="make_sky_residual_spectra"><a class="viewcode-back" href="../../api.html#kmos_tools.sky_clean.make_sky_residual_spectra">[docs]</a><span class="k">def</span> <span class="nf">make_sky_residual_spectra</span><span class="p">(</span><span class="n">exposure</span><span class="p">,</span> <span class="n">use_named_targets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>
+                              <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculate all the sky residual corrections for one DIT ~ a la Trevor Mendel</span>
 
 <span class="sd">    Generate median 1D sky spectra for each detector,</span>
-<span class="sd">    only from S1 and S3 cubes, and save them to use for subtraction.</span>
+<span class="sd">    only from certain cubes, and save them to use for subtraction.</span>
+<span class="sd">    E.g. for KLASS we set use_named_targets=[&#39;S1&#39;, &#39;S3&#39;] to only use</span>
+<span class="sd">    S1 and S3 targets (high z ~ empty).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        exposure (object): exposure object</span>
+<span class="sd">        use_named_targets (list): list of string to match with target name,</span>
+<span class="sd">            uses only IFUs containing those targets to make sky residual</span>
+<span class="sd">            spectra, default uses all IFUs</span>
 <span class="sd">        clobber (bool): Make a new sky spectrum if it already exists</span>
 <span class="sd">        plot (bool): make and save a plot of the median sky spectra</span>
 
@@ -209,9 +215,8 @@
                 <span class="n">ifu_comment</span> <span class="o">=</span> <span class="s1">&#39;HIERARCH ESO OCS ARM&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ifu</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; NAME&#39;</span>
                 <span class="n">ifu_header</span>  <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">header</span>
 
-                <span class="c1"># Use only frames with S1 or S3 targets for sky subtraction</span>
-                <span class="k">if</span> <span class="s1">&#39;S1&#39;</span> <span class="ow">in</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="p">[</span><span class="n">ifu_comment</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;S3&#39;</span> <span class="ow">in</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="p">[</span><span class="n">ifu_comment</span><span class="p">]:</span>
-
+                <span class="c1"># Use only frames with named targets for sky subtraction</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">name</span> <span class="ow">in</span> <span class="n">exposure</span><span class="o">.</span><span class="n">hdr</span><span class="p">[</span><span class="n">ifu_comment</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">use_named_targets</span><span class="p">]):</span>
                     <span class="n">ifu_cube</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">data</span>
 
                     <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">ifu</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
@@ -220,6 +225,9 @@
                         <span class="n">detector2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifu_cube</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">detector3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifu_cube</span><span class="p">)</span>
+
+        <span class="n">len_for_stack</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">detector1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">detector2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">detector3</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">len_for_stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Error, no IFUs used to create sky residual spectrum&quot;</span>
 
         <span class="c1"># Stack all spectra</span>
         <span class="n">detector1</span><span class="p">,</span> <span class="n">detector2</span><span class="p">,</span> <span class="n">detector3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detector3</span><span class="p">)</span>

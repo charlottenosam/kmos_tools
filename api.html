@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; KMOS tools 0.1.0.post8+gda0868b documentation</title>
+  <title>API &mdash; KMOS tools 0.1.0.post9+ga534c6e documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0.post8+gda0868b
+                0.1.0.post9+ga534c6e
               </div>
             
           
@@ -250,14 +250,19 @@
 <p>Works on individual exposures which must then be combined via <code class="docutils literal notranslate"><span class="pre">kmos_combine</span></code>.</p>
 <dl class="function">
 <dt id="kmos_tools.sky_clean.make_sky_residual_spectra">
-<code class="sig-prename descclassname">kmos_tools.sky_clean.</code><code class="sig-name descname">make_sky_residual_spectra</code><span class="sig-paren">(</span><em class="sig-param">exposure</em>, <em class="sig-param">clobber=True</em>, <em class="sig-param">plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/sky_clean.html#make_sky_residual_spectra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.sky_clean.make_sky_residual_spectra" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">kmos_tools.sky_clean.</code><code class="sig-name descname">make_sky_residual_spectra</code><span class="sig-paren">(</span><em class="sig-param">exposure, use_named_targets=[''], clobber=True, plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kmos_tools/sky_clean.html#make_sky_residual_spectra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kmos_tools.sky_clean.make_sky_residual_spectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate all the sky residual corrections for one DIT ~ a la Trevor Mendel</p>
 <p>Generate median 1D sky spectra for each detector,
-only from S1 and S3 cubes, and save them to use for subtraction.</p>
+only from certain cubes, and save them to use for subtraction.
+E.g. for KLASS we set use_named_targets=[‘S1’, ‘S3’] to only use
+S1 and S3 targets (high z ~ empty).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>exposure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – exposure object</p></li>
+<li><p><strong>use_named_targets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – list of string to match with target name,
+uses only IFUs containing those targets to make sky residual
+spectra, default uses all IFUs</p></li>
 <li><p><strong>clobber</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Make a new sky spectrum if it already exists</p></li>
 <li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – make and save a plot of the median sky spectra</p></li>
 </ul>
