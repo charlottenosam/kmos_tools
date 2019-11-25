@@ -19,14 +19,20 @@ from lmfit import Parameters, minimize
 __all__ = ["make_sky_residual_spectra", "subtract_sky_residual_spectra", "sky_residual"]
 
 
-def make_sky_residual_spectra(exposure, clobber=True, plot=True):
+def make_sky_residual_spectra(exposure, use_named_targets=[''],
+                              clobber=True, plot=True):
     """Calculate all the sky residual corrections for one DIT ~ a la Trevor Mendel
 
     Generate median 1D sky spectra for each detector,
-    only from S1 and S3 cubes, and save them to use for subtraction.
+    only from certain cubes, and save them to use for subtraction.
+    E.g. for KLASS we set use_named_targets=['S1', 'S3'] to only use
+    S1 and S3 targets (high z ~ empty).
 
     Args:
         exposure (object): exposure object
+        use_named_targets (list): list of string to match with target name,
+            uses only IFUs containing those targets to make sky residual
+            spectra, default uses all IFUs
         clobber (bool): Make a new sky spectrum if it already exists
         plot (bool): make and save a plot of the median sky spectra
 
@@ -53,9 +59,8 @@ def make_sky_residual_spectra(exposure, clobber=True, plot=True):
                 ifu_comment = 'HIERARCH ESO OCS ARM' + str(ifu) + ' NAME'
                 ifu_header  = ext.header
 
-                # Use only frames with S1 or S3 targets for sky subtraction
-                if 'S1' in exposure.hdr[ifu_comment] or 'S3' in exposure.hdr[ifu_comment]:
-
+                # Use only frames with named targets for sky subtraction
+                if any([name in exposure.hdr[ifu_comment] for name in use_named_targets]):
                     ifu_cube = ext.data
 
                     if 1 <= ifu <= 8:
@@ -64,6 +69,9 @@ def make_sky_residual_spectra(exposure, clobber=True, plot=True):
                         detector2.append(ifu_cube)
                     else:
                         detector3.append(ifu_cube)
+
+        len_for_stack = len(detector1) + len(detector2) + len(detector3)
+        assert len(len_for_stack) > 0, "Error, no IFUs used to create sky residual spectrum"
 
         # Stack all spectra
         detector1, detector2, detector3 = np.array(detector1), np.array(detector2), np.array(detector3)
