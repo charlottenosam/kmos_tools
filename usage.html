@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>KMOS Reduction Steps &mdash; KMOS tools 0.1.0.post9+ga534c6e documentation</title>
+  <title>KMOS Reduction Steps &mdash; KMOS tools 0.1.0.post10+g5691ef9 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0.post9+ga534c6e
+                0.1.0.post10+g5691ef9
               </div>
             
           
@@ -207,7 +207,7 @@
 <p class="admonition-title">Note</p>
 <p>ESO pipeline v&lt;1.4 may need to do flux calibration correction, to divide by DIT length. Can use <a class="reference internal" href="api.html#kmos_tools.pipeline_fixes.flux_fix" title="kmos_tools.pipeline_fixes.flux_fix"><code class="xref py py-func docutils literal notranslate"><span class="pre">kmos_tools.pipeline_fixes.flux_fix()</span></code></a>.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kmos_tools</span> <span class="kn">as</span> <span class="nn">kt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kmos_tools</span> <span class="k">as</span> <span class="nn">kt</span>
 
 <span class="c1"># Find your individual exposures</span>
 <span class="n">exp_list</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">find_exposures</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span><span class="p">)</span>
@@ -230,7 +230,7 @@
 <div class="section" id="rotate-frames-which-don-t-have-north-up-optional">
 <h2>4. Rotate frames which don’t have North up (optional)<a class="headerlink" href="#rotate-frames-which-don-t-have-north-up-optional" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes the instrument is rotated between OBs, need to rotate the IFUs so they can be combined</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kmos_tools</span> <span class="kn">as</span> <span class="nn">kt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kmos_tools</span> <span class="k">as</span> <span class="nn">kt</span>
 
 <span class="c1"># Find your individual exposures</span>
 <span class="n">exp_list</span> <span class="o">=</span> <span class="n">kt</span><span class="o">.</span><span class="n">find_exposures</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span><span class="p">)</span>
@@ -254,7 +254,7 @@
 <span class="n">fname_stars</span>   <span class="o">=</span> <span class="s1">&#39;stars.txt&#39;</span>   <span class="c1"># File to save star parameters to</span>
 <span class="n">fname_combine</span> <span class="o">=</span> <span class="s1">&#39;combine.sof&#39;</span> <span class="c1"># .sof file to create</span>
 
-<span class="n">kt</span><span class="o">.</span><span class="n">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">star_ifu</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="n">fname_combine</span><span class="p">)</span>
+<span class="n">kt</span><span class="o">.</span><span class="n">star_positions_batch</span><span class="p">(</span><span class="n">frame_list</span><span class="p">,</span> <span class="n">psf_cut</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">star_ifu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">starparams_filename</span><span class="o">=</span><span class="n">fname_stars</span><span class="p">,</span> <span class="n">combinefiles_filename</span><span class="o">=</span><span class="n">fname_combine</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
