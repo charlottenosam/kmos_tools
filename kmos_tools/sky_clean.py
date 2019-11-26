@@ -223,7 +223,7 @@ def subtract_sky_residual_spectra(exposure, clobber=True, plot=True):
                 for i, j in it.product(np.arange(dat3D.shape[1]), np.arange(dat3D.shape[2])):
                     params = Parameters()
                     params.add('scale', value=1.)
-                    out = minimize(exposure.sky_residual, params, args=(skyspec, dat3D[:, i, j], err1D))
+                    out = minimize(sky_residual, params, args=(skyspec, dat3D[:, i, j], err1D))
                     skyscale2D[i, j]   = out.params['scale'].value
                     chisquared2D[i, j] = out.chisqr
 
