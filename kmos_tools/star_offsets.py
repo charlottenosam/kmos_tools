@@ -181,19 +181,18 @@ def star_fit_profile(exposure):
 
 
     """
-    #print('Y')
     # Find IFU star is on
     if exposure.star_ifu is None:
         exposure.star_ifu = find_star_ifu(exposure)
 
     # Make a copy of the IFU with the star
     kmo_copy = 'esorex kmo_copy -x=1 -y=1 -z=1 -xsize=14 -ysize=14 -zsize=2048 -ifu=%s %s' % (str(exposure.star_ifu), exposure.filename)
-    subprocess.call(kmo_copy,shell=True)
+    subprocess.call(kmo_copy, shell=True)
     status, copyfile = subprocess.getstatusoutput("find . -maxdepth 1 -iname copy.fits")
 
     # Collapse the IFU to make an image
     kmo_make_image = 'esorex kmo_make_image %s' % copyfile
-    subprocess.call(kmo_make_image,shell=True)
+    subprocess.call(kmo_make_image, shell=True)
     status, makeimagefile = subprocess.getstatusoutput("find . -maxdepth 1 -iname make_image.fits")
     # Check the image, if weird, invert
     image_hdu = fits.open(makeimagefile)
@@ -208,11 +207,11 @@ def star_fit_profile(exposure):
 
     # Rename star file
     exposure.star_image_file = exposure.filename.strip('.fits') + '_star_image.fits'
-    subprocess.call('cp %s %s' % (makeimagefile, exposure.star_image_file),shell=True)
+    subprocess.call('cp %s %s' % (makeimagefile, exposure.star_image_file), shell=True)
 
     # Fit profile to star image
     kmo_fit_profile = 'esorex kmo_fit_profile %s' % exposure.star_image_file
-    subprocess.call(kmo_fit_profile,shell=True)
+    subprocess.call(kmo_fit_profile, shell=True)
     status, fitprofilefile = subprocess.getstatusoutput("find . -maxdepth 1 -iname fit_profile.fits")
 
     # Tidy up
@@ -220,8 +219,8 @@ def star_fit_profile(exposure):
     rename_fit_profile = 'mv %s %s' % (fitprofilefile, star_file_name)
     delete_temps       = 'rm %s %s' % (copyfile, makeimagefile)
 
-    subprocess.call(rename_fit_profile,shell=True)
-    subprocess.call(delete_temps,shell=True)
+    subprocess.call(rename_fit_profile, shell=True)
+    subprocess.call(delete_temps, shell=True)
 
     print('Saved star psf profile to '+star_file_name)
 
@@ -252,11 +251,8 @@ def star_psf(exposure, clobber=True, vb=False):
     """
 
     exposure.invert = False
-    #print('0')
     #if clobber is True and ~os.path.exists(exposure.starfile): - problem with this line
-    #print('1')
     exposure.starfile, exposure.invert = star_fit_profile(exposure) #changed this line - wasn't calling function
-    #print(exposure.starfile,exposure.invert)
 
     if exposure.invert:
         invert_comment = '# weird star, inverted flux'
