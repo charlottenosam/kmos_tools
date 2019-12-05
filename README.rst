@@ -6,7 +6,7 @@ KMOS tools
         :target: https://travis-ci.org/charlottenosam/kmos_tools
 
 
-Python tools developed by Charlotte Mason for post-processing and analysing `VLT/KMOS <https://www.eso.org/sci/facilities/paranal/instruments/kmos.html>`_ data from the KLASS VLT Large Program (`196.A-0778 <https://ui.adsabs.harvard.edu/abs/2019Msngr.176...33F/abstract>`_
+Python tools developed by Charlotte Mason for post-processing and analysing `VLT/KMOS <https://www.eso.org/sci/facilities/paranal/instruments/kmos.html>`_ data from the KLASS VLT Large Program (`196.A-0778 <https://ui.adsabs.harvard.edu/abs/2019Msngr.176...33F/abstract>`_)
 
 **Documentation: https://charlottenosam.github.io/kmos_tools.**
 
