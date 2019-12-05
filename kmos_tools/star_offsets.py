@@ -119,12 +119,12 @@ def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2., star_ifu
     # Save star parameter output
     star_table = np.array(star_table)
 
-    med_FWHM   = [float(x) for x in star_table[:, 4]]
-    med_FWHM   = np.nanmedian([x for x in med_FWHM if x > 0])
-    med_ba     = [float(x) for x in star_table[:, 5]]
-    med_ba     = np.nanmedian([x for x in med_ba if x > 0])
-    med_pa     = [float(x) for x in star_table[:, 6]]
-    med_pa     = np.nanmedian([x for x in med_pa if x > 0])
+    FWHM  = np.array([float(x) for x in star_table[:, 4]])
+    med_FWHM  = np.nanmedian(FWHM[FWHM > 0.])
+    ba  = np.array([float(x) for x in star_table[:, 5]])
+    med_ba  = np.nanmedian(ba[ba > 0.])
+    pa  = np.array([float(x) for x in star_table[:, 6]])
+    med_pa  = np.nanmedian(pa[pa > 0.])
 
     np.savetxt(starparams_filename, star_table, fmt='%s', delimiter='    ', header='Star PSFs. Median FWHM = %.3f Median BA = %.3f Median PA = %.3f \nFrame    OB_time     XCEN_pix     YCEN_pix    FWHM_arcsec    BA    PA_deg' % (med_FWHM, med_ba, med_pa), comments='# ')
     np.savetxt(starparams_filename.replace('.txt', '_bad.txt'), star_table_bad, fmt='%s', delimiter='    ', header='Bad Star PSFs. \nFrame    OB_time     XCEN_pix     YCEN_pix    FWHM_arcsec    BA    PA_deg', comments='# ')
