@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>kmos_tools.star_offsets &mdash; KMOS tools 0.1.0.post14+g621c2ce documentation</title>
+  <title>kmos_tools.star_offsets &mdash; KMOS tools 0.1.0.post15+gd2b4cbe documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.1.0.post14+g621c2ce
+                0.1.0.post15+gd2b4cbe
               </div>
             
           
@@ -175,7 +175,6 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
@@ -255,7 +254,7 @@
 
         <span class="c1"># Look for a star in the frame (based on having `star` in the target name) and fit a gaussian profile to it</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span> <span class="o">=</span> <span class="n">star_psf</span><span class="p">(</span><span class="n">sci_reconstructed</span><span class="p">,</span><span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">psf_center_x</span><span class="p">,</span> <span class="n">psf_center_y</span><span class="p">,</span> <span class="n">psf_fwhm</span><span class="p">,</span> <span class="n">psf_ba</span><span class="p">,</span> <span class="n">psf_pa</span><span class="p">,</span> <span class="n">invert_comment</span> <span class="o">=</span> <span class="n">star_psf</span><span class="p">(</span><span class="n">sci_reconstructed</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">psf_center_x</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No star in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">frame</span><span class="p">)</span>
@@ -407,8 +406,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">exposure</span><span class="o">.</span><span class="n">invert</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="c1">#if clobber is True and ~os.path.exists(exposure.starfile): - problem with this line</span>
-    <span class="n">exposure</span><span class="o">.</span><span class="n">starfile</span><span class="p">,</span> <span class="n">exposure</span><span class="o">.</span><span class="n">invert</span> <span class="o">=</span> <span class="n">star_fit_profile</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span> <span class="c1">#changed this line - wasn&#39;t calling function</span>
+    <span class="c1"># if clobber is True and ~os.path.exists(exposure.starfile): - problem with this line</span>
+    <span class="n">exposure</span><span class="o">.</span><span class="n">starfile</span><span class="p">,</span> <span class="n">exposure</span><span class="o">.</span><span class="n">invert</span> <span class="o">=</span> <span class="n">star_fit_profile</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span>  <span class="c1"># changed this line - wasn&#39;t calling function</span>
 
     <span class="k">if</span> <span class="n">exposure</span><span class="o">.</span><span class="n">invert</span><span class="p">:</span>
         <span class="n">invert_comment</span> <span class="o">=</span> <span class="s1">&#39;# weird star, inverted flux&#39;</span>
