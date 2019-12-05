@@ -99,7 +99,8 @@ def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2., star_ifu
 
         # Look for a star in the frame (based on having `star` in the target name) and fit a gaussian profile to it
         try:
-            psf_center_x, psf_center_y, psf_fwhm, psf_ba, psf_pa, invert_comment = star_psf(sci_reconstructed)
+            psf_center_x, psf_center_y, psf_fwhm, psf_ba, psf_pa, invert_comment = star_psf(sci_reconstructed,clobber=True)
+            print(psf_center_x)
         except:
             print('No star in %s' % frame)
             psf_center_x, psf_center_y, psf_fwhm, psf_ba, psf_pa, invert_comment = np.nan, np.nan, np.nan, np.nan, np.nan, '# no star'
@@ -117,9 +118,13 @@ def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2., star_ifu
 
     # Save star parameter output
     star_table = np.array(star_table)
-    med_FWHM   = np.nanmedian([float(x) for x in star_table[:, 4] if x > 0])
-    med_ba     = np.nanmedian([float(x) for x in star_table[:, 5] if x > 0])
-    med_pa     = np.nanmedian([float(x) for x in star_table[:, 6] if x > 0])
+
+    FWHM  = np.array([float(x) for x in star_table[:, 4]])
+    med_FWHM  = np.nanmedian(FWHM[FWHM > 0.])
+    ba  = np.array([float(x) for x in star_table[:, 5]])
+    med_ba  = np.nanmedian(ba[ba > 0.])
+    pa  = np.array([float(x) for x in star_table[:, 6]])
+    med_pa  = np.nanmedian(pa[pa > 0.])
 
     np.savetxt(starparams_filename, star_table, fmt='%s', delimiter='    ', header='Star PSFs. Median FWHM = %.3f Median BA = %.3f Median PA = %.3f \nFrame    OB_time     XCEN_pix     YCEN_pix    FWHM_arcsec    BA    PA_deg' % (med_FWHM, med_ba, med_pa), comments='# ')
     np.savetxt(starparams_filename.replace('.txt', '_bad.txt'), star_table_bad, fmt='%s', delimiter='    ', header='Bad Star PSFs. \nFrame    OB_time     XCEN_pix     YCEN_pix    FWHM_arcsec    BA    PA_deg', comments='# ')
@@ -176,21 +181,19 @@ def star_fit_profile(exposure):
 
 
     """
-
     # Find IFU star is on
     if exposure.star_ifu is None:
         exposure.star_ifu = find_star_ifu(exposure)
 
     # Make a copy of the IFU with the star
     kmo_copy = 'esorex kmo_copy -x=1 -y=1 -z=1 -xsize=14 -ysize=14 -zsize=2048 -ifu=%s %s' % (str(exposure.star_ifu), exposure.filename)
-    os.system(kmo_copy)
+    subprocess.call(kmo_copy, shell=True)
     status, copyfile = subprocess.getstatusoutput("find . -maxdepth 1 -iname copy.fits")
 
     # Collapse the IFU to make an image
     kmo_make_image = 'esorex kmo_make_image %s' % copyfile
-    os.system(kmo_make_image)
+    subprocess.call(kmo_make_image, shell=True)
     status, makeimagefile = subprocess.getstatusoutput("find . -maxdepth 1 -iname make_image.fits")
-
     # Check the image, if weird, invert
     image_hdu = fits.open(makeimagefile)
     image     = image_hdu[1].data
@@ -204,11 +207,11 @@ def star_fit_profile(exposure):
 
     # Rename star file
     exposure.star_image_file = exposure.filename.strip('.fits') + '_star_image.fits'
-    os.system('cp %s %s' % (makeimagefile, exposure.star_image_file))
+    subprocess.call('cp %s %s' % (makeimagefile, exposure.star_image_file), shell=True)
 
     # Fit profile to star image
     kmo_fit_profile = 'esorex kmo_fit_profile %s' % exposure.star_image_file
-    os.system(kmo_fit_profile)
+    subprocess.call(kmo_fit_profile, shell=True)
     status, fitprofilefile = subprocess.getstatusoutput("find . -maxdepth 1 -iname fit_profile.fits")
 
     # Tidy up
@@ -216,8 +219,8 @@ def star_fit_profile(exposure):
     rename_fit_profile = 'mv %s %s' % (fitprofilefile, star_file_name)
     delete_temps       = 'rm %s %s' % (copyfile, makeimagefile)
 
-    os.system(rename_fit_profile)
-    os.system(delete_temps)
+    subprocess.call(rename_fit_profile, shell=True)
+    subprocess.call(delete_temps, shell=True)
 
     print('Saved star psf profile to '+star_file_name)
 
@@ -248,9 +251,8 @@ def star_psf(exposure, clobber=True, vb=False):
     """
 
     exposure.invert = False
-
-    if clobber is True and ~os.path.exists(exposure.starfile):
-        exposure.starfile, exposure.invert = exposure.star_fit_profile()
+    #if clobber is True and ~os.path.exists(exposure.starfile): - problem with this line
+    exposure.starfile, exposure.invert = star_fit_profile(exposure) #changed this line - wasn't calling function
 
     if exposure.invert:
         invert_comment = '# weird star, inverted flux'
@@ -259,7 +261,6 @@ def star_psf(exposure, clobber=True, vb=False):
 
     star_hdulist  = fits.open(exposure.starfile)
     star_hdr      = star_hdulist[1].header
-
     # Load fit parameters
     psf_center_x = star_hdr['HIERARCH ESO PRO FIT CENTROID X']
     psf_center_y = star_hdr['HIERARCH ESO PRO FIT CENTROID Y']

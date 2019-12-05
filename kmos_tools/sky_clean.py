@@ -71,7 +71,7 @@ def make_sky_residual_spectra(exposure, use_named_targets=[''],
                         detector3.append(ifu_cube)
 
         len_for_stack = len(detector1) + len(detector2) + len(detector3)
-        assert len(len_for_stack) > 0, "Error, no IFUs used to create sky residual spectrum"
+        assert len_for_stack > 0, "Error, no IFUs used to create sky residual spectrum"
 
         # Stack all spectra
         detector1, detector2, detector3 = np.array(detector1), np.array(detector2), np.array(detector3)
