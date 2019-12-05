@@ -19,7 +19,6 @@
 
 """
 
-import os
 import numpy as np
 import subprocess
 import astropy.io.fits as fits
@@ -99,7 +98,7 @@ def star_positions_batch(frame_list, psf_cut=0.8, edge_x=2., edge_y=2., star_ifu
 
         # Look for a star in the frame (based on having `star` in the target name) and fit a gaussian profile to it
         try:
-            psf_center_x, psf_center_y, psf_fwhm, psf_ba, psf_pa, invert_comment = star_psf(sci_reconstructed,clobber=True)
+            psf_center_x, psf_center_y, psf_fwhm, psf_ba, psf_pa, invert_comment = star_psf(sci_reconstructed, clobber=True)
             print(psf_center_x)
         except:
             print('No star in %s' % frame)
@@ -251,8 +250,8 @@ def star_psf(exposure, clobber=True, vb=False):
     """
 
     exposure.invert = False
-    #if clobber is True and ~os.path.exists(exposure.starfile): - problem with this line
-    exposure.starfile, exposure.invert = star_fit_profile(exposure) #changed this line - wasn't calling function
+    # if clobber is True and ~os.path.exists(exposure.starfile): - problem with this line
+    exposure.starfile, exposure.invert = star_fit_profile(exposure)  # changed this line - wasn't calling function
 
     if exposure.invert:
         invert_comment = '# weird star, inverted flux'
