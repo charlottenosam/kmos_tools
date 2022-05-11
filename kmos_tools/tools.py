@@ -44,14 +44,21 @@ def scale_zerotoone(vectordata, zero=0.0, one=1.0):
     return newvalue
 
 
-def natural_sort(l):
+def natural_sort(my_list):
+    """
+    Natural sort a list
+
+    Based on: https://stackoverflow.com/questions/4836710/is-there-a-built-in-function-for-string-natural-sort
+    """
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
-    return sorted(l, key=alphanum_key)
+    return sorted(my_list, key=alphanum_key)
 
 
 def determine_aspect(shape, extent):
-    """ Get aspect for imshow """
+    """
+    Get aspect for imshow
+    """
     dx = (extent[1] - extent[0]) / float(shape[1])
     dy = (extent[3] - extent[2]) / float(shape[0])
     return dx / dy
